@@ -1,29 +1,37 @@
 grammar Tis100;
 
-node: line? ('\n' line)*;
+node: line*;
 
-line:     comment
-        | label
-        | label stmt
-        | stmt
-        ;
-
-comment: '#' ~'\n'*?;
+line:
+    label? stmt? COMMENT? NEWLINE;
 
 label: ID ':';
 
 stmt:
-      'MOV' src ',' dst
-    | 'JMP' ID
+      'NOP'                #NOP
+    | 'MOV' src ',' dst    #MOV
+    | 'SWP'                #SWP
+    | 'SAV'                #SAV
+    | 'ADD' src            #ADD
+    | 'SUB' src            #SUB
+    | 'NEG'                #NEG
+    | 'JMP' ID             #JMP
+    | 'JEZ' ID             #JEZ
+    | 'JNZ' ID             #JNZ
+    | 'JGZ' ID             #JGZ
+    | 'JLZ' ID             #JLZ
+    | 'JRO' src            #JRO
     ;
 
-src: REGISTER
-    | INT
-    | PORT
+
+
+src: REGISTER              #sourceRegister
+    | INT                  #sourceInt
+    | PORT                 #sourcePort
     ;
 
-dst: REGISTER
-    | PORT
+dst: REGISTER              #destinationRegister
+    | PORT                 #destinationPort
    ;
 
 REGISTER:
@@ -36,7 +44,11 @@ PORT:
     | 'LEFT'
     | 'DOWN'
     | 'RIGHT'
+    | 'ANY'
+    | 'LAST'
     ;
+
+COMMENT: '#' (~'\n')*;
 
 INT: '-'? DIGIT DIGIT? DIGIT?;
 
@@ -46,4 +58,4 @@ ID: [A-Z0-9\-_$]+;
 
 WS: ' '+ -> skip;
 
-
+NEWLINE: '\n';

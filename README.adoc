@@ -1,0 +1,48 @@
+# (Yet Another) TIS-100 Emulator
+
+This is a toy project based on the excellent http://www.zachtronics.com/tis-100/[TIS-100] game by http://www.zachtronics.com/[Zachtronics]. If you don't know about TIS-100, but are still reading this, chances are you're a good candidate for buying the game. Do that. You can also buy any other game by Zachtronics with your eyes closed, for that matter. Enjoy then read on...
+
+## Architecture
+The project uses an ANTLR generated parser to "compile" a TIS-100 program to a set of instructions.
+Communication over ports is abstracted away and the project comes with an implementation on top of 
+http://projects.spring.io/spring-integration/[Spring Integration] channels.
+
+Of special interest is the fact that problem specifications are actually lua scripts, so the main runner leverages http://www.luaj.org/luaj.html[luaj] to deal with those.
+
+
+## Building and running
+The project can be built using maven:
+```
+mvn package
+```
+
+The main class is `eric.bottard.tis100.Runner` and allows running a solution against a problem specification, in a terminal, using fancy ANSI art. Both the solution and the specification support the original game format (examples link:src/main/resources/41427.0.txt[here] and link:src/main/resources/spec.lua[here]).
+
+As such, running
+```
+mvn package exec:java -Dexec.mainClass=eric.bottard.tis100.Runner -Dexec.args="src/main/resources/spec.lua src/main/resources/41427.0.txt"
+```
+
+in a big enough terminal window yields this:
+
+image::https://asciinema.org/a/5ixvl3a54e6t3w2js93vr0wxu.png[link=https://asciinema.org/a/5ixvl3a54e6t3w2js93vr0wxu]
+
+(This is my solution to the `SEQUENCE PEAK DETECTOR` original problem).
+
+## Unsupported Features
+This is just a proof of concept, and as such some features from the original game
+have not been implemented (left as an exercise to the reader, pull requests welcome!):
+
+* There is no support for the `ANY` and `LAST` pseudo-ports
+* The Stack node type is not implemented
+
+In addition, you will find that 
+
+* the text UI does not behave exactly as the original (less feedback, _e.g._ ports, input/output advancement)
+* there is actually no check that the program conforms to the specification
+* nor does the Runner terminate (`CTRL-C` is your friend)
+* it does not count cycles, number of instructions or anything
+
+## To be continued
+How fast can you say "data driven microservices"?
+
